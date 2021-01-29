@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.time.LocalDateTime;
 
 public class SimulatedDevice {
   // The device connection string to authenticate the device with your IoT hub.
@@ -31,17 +32,27 @@ public class SimulatedDevice {
   private static final int METHOD_NOT_DEFINED = 404;
   private static final int INVALID_PARAMETER = 400;
 
-  private static int telemetryInterval = 1000;
+  private static int telemetryInterval = 10000;
 
   // Specify the telemetry to send to your IoT hub.
   private static class TelemetryDataPoint {
-    public double rssiLora;
+    public double Lora;
+    public double Bluetooth;
+    public double Particle;
+    public double rssiLora;  
+    public double CSQ;
     public double rssiParticle;
     public double rssiBluetooth;
+    
     public double lat;
     public double lng;
     public String operador;
-    
+    public LocalDateTime timeCapbluetooth;
+    public LocalDateTime timeCapLora;
+    public LocalDateTime timeCapParticle;
+    public String modelo;
+    public String fabricante;
+    public String tecnologia;
 
     // Serialize object to JSON format.
     public String serialize() {
@@ -126,15 +137,27 @@ public class SimulatedDevice {
           double currentTemperature = minTemperature + rand.nextDouble() * 15;
           double currentHumidity = minHumidity + rand.nextDouble() * 20;
           double rssiblue = minHumidity + rand.nextDouble() * 30;
+          double csq = minHumidity + rand.nextDouble() * 30;
+          double bluetooth= rand.nextDouble() * 30;
+          double particle = rand.nextDouble() * 30;
           latitud+=0.001;
           longitud+=0.001;
           TelemetryDataPoint telemetryDataPoint = new TelemetryDataPoint();
+          telemetryDataPoint.Bluetooth=bluetooth;
+          telemetryDataPoint.Particle=particle;
           telemetryDataPoint.rssiLora = currentTemperature;
           telemetryDataPoint.rssiParticle = currentHumidity;
           telemetryDataPoint.rssiBluetooth = rssiblue;
+          telemetryDataPoint.Lora = rssiblue;
           telemetryDataPoint.lat = latitud;
           telemetryDataPoint.lng = longitud;
           telemetryDataPoint.operador="TIGO";
+          telemetryDataPoint.modelo="QUETEL-M95";
+          telemetryDataPoint.fabricante="QUETEL";
+          telemetryDataPoint.CSQ=csq;
+          telemetryDataPoint.timeCapbluetooth=LocalDateTime.now();
+          telemetryDataPoint.timeCapLora=LocalDateTime.now();
+          telemetryDataPoint.timeCapParticle=LocalDateTime.now();
           // Add the telemetry to the message body as JSON.
           String msgStr = telemetryDataPoint.serialize();
           Message msg = new Message(msgStr);
